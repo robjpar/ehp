@@ -1,11 +1,21 @@
 {
     "python.pythonPath": "/usr/bin/python3",
     "cSpell.words": [
+        "DNSQR",
+        "DNSRR",
+        "NFQUEUE",
+        "ancount",
+        "bing",
+        "chksum",
         "hwdst",
         "hwsrc",
         "iface",
         "ifconfig",
+        "iptables",
         "pdst",
+        "qname",
+        "rdata",
+        "rrname",
         "scapy"
     ],
     "editor.rulers": [
