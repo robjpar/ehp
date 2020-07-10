@@ -16,6 +16,9 @@ def process_sniffed_packet(packet):
             response_mac = packet[sc.ARP].hwsrc
             if real_mac != response_mac:
                 print('[+] You are under attack!')
+                print(f'[+] IP is {packet[sc.ARP].psrc}')
+                print(f'[+] Real MAC is {real_mac}')
+                print(f'[+] Response MAC is {response_mac}')
         except IndexError:
             pass
 
