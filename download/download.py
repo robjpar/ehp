@@ -1,3 +1,7 @@
+# cp download.py /var/www/html/evil-files
+# service apache2 start
+# http://10.0.2.13/evil-files/
+
 import requests
 
 
