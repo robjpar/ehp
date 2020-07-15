@@ -39,7 +39,7 @@ class Listener:
     def run(self):
         while True:
             command = input('>> ')  # str
-            command = command.split(' ')
+            command = command.strip().split(' ')
             result = self.execute_remotely(command)  # str
             print(result)
 
