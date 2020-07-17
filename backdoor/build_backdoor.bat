@@ -1,1 +1,1 @@
-pyinstaller backdoor.py --onefile
+pyinstaller --onefile backdoor.py 
