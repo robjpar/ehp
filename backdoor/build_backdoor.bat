@@ -1,0 +1,1 @@
+pyinstaller backdoor.py --onefile
