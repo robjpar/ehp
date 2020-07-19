@@ -20,7 +20,7 @@ with open('subdomains-wordlist.txt', 'r') as wordlist_file:
             print(f'[+] Discovered subdomain --> {test_url}')
 
 
-target_url = '10.0.2.14'
+target_url = '10.0.2.14/mutillidae'
 n_lines = 5000
 
 with open('files-and-dirs-wordlist.txt', 'r') as wordlist_file:
