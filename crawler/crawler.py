@@ -10,11 +10,22 @@ def request(url, timeout=3):
 
 
 target_url = 'google.com'
+n_lines = 3
 
 with open('subdomains-wordlist.txt', 'r') as wordlist_file:
-    n_lines = 10
     for line in islice(wordlist_file, n_lines):
         test_url = f'{line.strip()}.{target_url}'
         response = request(test_url)
         if response:
             print(f'[+] Discovered subdomain --> {test_url}')
+
+
+target_url = '10.0.2.14'
+n_lines = 5000
+
+with open('files-and-dirs-wordlist.txt', 'r') as wordlist_file:
+    for line in islice(wordlist_file, n_lines):
+        test_url = f'{target_url}/{line.strip()}'
+        response = request(test_url)
+        if response:
+            print(f'[+] Discovered url --> {test_url}')
