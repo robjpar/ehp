@@ -3,15 +3,17 @@ from scapy.layers import http
 
 
 def get_url(packet):
-    return packet[http.HTTPRequest].Host + packet[http.HTTPRequest].Path
+    url = packet[http.HTTPRequest].Host + packet[http.HTTPRequest].Path
+    return url.decode()
 
 
 def get_login(packet):
     if packet.haslayer(sc.Raw):
         load = packet[sc.Raw].load
+        load = load.decode(errors='ignore')
         keywords = ['username', 'uname', 'user', 'login', 'password', 'pass']
         for keyword in keywords:
-            if bytes(keyword, 'utf-8') in load:
+            if keyword in load:
                 return load
 
 
