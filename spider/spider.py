@@ -1,17 +1,19 @@
 import requests
 import re
+import urllib.parse
 
 
-def request(url, timeout=3):
-    try:
-        return requests.get(f'http://{url}', timeout=timeout)
-    except requests.exceptions.ConnectionError:
-        pass
+def extract_links_from(url):
+    response = requests.get(url)
+    content = response.content.decode()
+    return re.findall('href="(.*?)"', content)
 
 
-target_url = '10.0.2.14/mutillidae'
+target_url = 'http://10.0.2.14/mutillidae'
+href_links = extract_links_from(target_url)
 
-response = request(target_url)
-content = response.content.decode()
-href_links = re.findall('href="(.*?)"', content)
-print(href_links)
+for link in href_links:
+    link = urllib.parse.urljoin(target_url, link)
+
+    if target_url in link:
+        print(link)
