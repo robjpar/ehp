@@ -1,3 +1,6 @@
+# service apache2 start
+# service apache2 stop
+
 # Targeting a remote computer
 # iptables -I FORWARD -j NFQUEUE --queue-num 0
 # iptables --flush
