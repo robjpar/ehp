@@ -3,6 +3,10 @@ import re
 from urllib.parse import urljoin
 
 
+target_url = 'http://10.0.2.14/mutillidae/'
+target_links = []
+
+
 def extract_links_from(url):
     response = requests.get(url)
     content = response.content.decode(errors='ignore')
@@ -17,13 +21,10 @@ def crawl(url):
         if '#' in link:
             link = link.split('#')[0]
 
-        if url in link and link not in target_links:
+        if target_url in link and link not in target_links:
+            print(f'Found link > {link}')
             target_links.append(link)
             crawl(link)
 
 
-target_url = 'http://10.0.2.14'
-target_links = []
 crawl(target_url)
-for link in target_links:
-    print(link)
