@@ -19,7 +19,8 @@
         "qname",
         "rdata",
         "rrname",
-        "scapy"
+        "scapy",
+        "vuln"
     ],
     "editor.rulers": [
         79
